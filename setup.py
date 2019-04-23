@@ -27,7 +27,7 @@ version = find_version('prs_utility', '__init__.py')
 github_url = 'https://github.com/Press-One/prs-utility-py'
 
 setup(
-    name="prs-utility-py",
+    name="prs-utility",
     version=version,
     url=github_url,
     license='MIT',

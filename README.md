@@ -1,4 +1,4 @@
-prs-utility-py 是 PRS 为 Python 提供的算法工具库，包含项目中用到的消息摘要、签名算法。
+prs-utility 是 PRS 为 Python 提供的算法工具库，包含项目中用到的消息摘要、签名算法。
 
 ## Python 版本支持
 
@@ -6,7 +6,7 @@ prs-utility-py 是 PRS 为 Python 提供的算法工具库，包含项目中用�
 
 ## 安装
 
-    pip install prs-utility-py
+    pip install prs-utility
 
 ## 使用示例
 
