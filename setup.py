@@ -30,11 +30,6 @@ setup(
     name="prs-utility-py",
     version=version,
     url=github_url,
-    project_urls=OrderedDict((
-        ('Documentation', ''),
-        ('Code', ''),
-        ('Issue tracker', '%s/issues' % github_url),
-    )),
     license='MIT',
     author="PRESS.one",
     author_email="dev@press.one",
@@ -66,7 +61,6 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Topic :: Software Development :: Libraries :: Application Library',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
