@@ -24,6 +24,7 @@ from .core import (
     sign_text,
     sign_block_data,
     sig_to_address,
+    hash_text,
     hash_block_data,
     sig_to_address_from_block,
 )
