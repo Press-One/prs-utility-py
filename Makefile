@@ -2,7 +2,7 @@
 
 all: test
 
-install-dev:
+install-dev: clean
 	pip install -q -e .[dev]
 
 lint: clean-pyc
@@ -13,10 +13,24 @@ test: clean-pyc install-dev
 
 coverage: clean-pyc install-dev
 	coverage run -m pytest
-	coverage report
+	coverage report -m
 
 test-all: install-dev
 	tox
+
+sdist: clean
+	python setup.py sdist bdist_wheel
+	ls -lh dist
+
+upload-pypi: sdist
+	twine upload dist/* --repository pypi
+
+clean: clean-build clean-pyc
+
+clean-build:
+	rm -fr build/
+	rm -fr dist/
+	rm -fr *.egg-info
 
 clean-pyc:
 	@echo "clean pyc"
