@@ -10,7 +10,7 @@ prs-utility 是 PRS 为 Python 提供的算法工具库，包含项目中用到�
 
 ## 使用示例
 
-    ```python
+```python
     # 根据 keystore 和 password 得到私钥
     import json
     import prs_utility
@@ -59,7 +59,7 @@ prs-utility 是 PRS 为 Python 提供的算法工具库，包含项目中用到�
     # 生成一对新密钥
     key_pair = prs_utility.create_key_pair()
     print('key_pair:', key_pair)
-    ```
+```
 
 ## API
 
