@@ -11,6 +11,7 @@ from .util import (
     buf_to_hex,
     hex_to_buf,
     dump_buf,
+    quote_qs,
     get_sorted_qs,
 )
 
@@ -29,7 +30,7 @@ from .core import (
     sig_to_address_from_block,
 )
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 __all__ = [
     'buf_to_hex',
     'hex_to_buf',

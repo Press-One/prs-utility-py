@@ -4,8 +4,6 @@ import os
 from eth_keyfile import decode_keyfile_json
 from eth_utils import (
     keccak,
-    is_bytes,
-    is_string,
     to_bytes
 )
 import eth_keys
@@ -109,8 +107,8 @@ def sign_hash(_hash, private_key):
     """
     # get signature
     private_key = get_private_key(private_key)
-    signature = private_key.sign_msg_hash(util.hex_to_buf(_hash))
-    sign_hex = util.buf_to_hex(signature.to_bytes())
+    sign = private_key.sign_msg_hash(util.hex_to_buf(_hash))
+    sign_hex = util.remove_prefix_0x(sign.to_hex())
     return {
         'hash': _hash,
         'signature': sign_hex,

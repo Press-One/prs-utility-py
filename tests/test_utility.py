@@ -1,13 +1,16 @@
 import json
 import pytest
 
-from prs_utility.util import remove_prefix_0x, dump_buf
+from prs_utility.util import (
+    remove_prefix_0x, dump_buf, quote_qs, get_sorted_qs
+)
 from prs_utility.core import get_private_key
 from prs_utility import (
     keccak256,
     recover_private_key,
     private_key_to_address,
     create_key_pair,
+    sign_hash,
     sign_text,
     sign_block_data,
     sig_to_address,
@@ -46,7 +49,33 @@ def test_remove_prefix_0x(s):
     remove_prefix_0x(s) == '123456'
 
 
+@pytest.mark.parametrize(
+    's, expected',
+    [
+        ('/', '%2F'),
+        (' ', '%20'),
+        ('+', '%2B'),
+        ('http://a.com', 'http%3A%2F%2Fa.com'),
+    ]
+)
+def test_quote_qs(s, expected):
+    assert quote_qs(s) == expected
+
+
+@pytest.mark.parametrize(
+    'data, expected',
+    [
+        ({'a': 'A', 'b': True, 'c': False}, 'a=A&b=true&c=false'),
+        ({'c': 'A', 'b': True, 'a': False}, 'a=false&b=true&c=A'),
+        ({'c': 'a', 'b': 'b', 'a': 'c'}, 'a=c&b=b&c=a'),
+    ]
+)
+def test_get_sorted_qs(data, expected):
+    assert get_sorted_qs(data) == expected
+
+
 def test_get_private_key():
+    # from hex str
     pk = get_private_key(PRIVATE_KEY)
     assert dump_buf(pk.to_bytes(), dump=True) == PRIVATE_KEY
 
@@ -56,6 +85,17 @@ def test_get_private_key():
 
     pk3 = get_private_key(pk2)
     assert dump_buf(pk3.to_bytes(), dump=True) == PRIVATE_KEY
+
+    # from eth_keys.datatypes.PrivateKey
+    assert pk3 == get_private_key(pk3)
+
+    # from bytes
+    pk4 = get_private_key(hex_to_buf(PRIVATE_KEY))
+    assert dump_buf(pk4.to_bytes(), dump=True) == PRIVATE_KEY
+
+    # others raise ValueError
+    with pytest.raises(ValueError):
+        assert get_private_key(49811479637078589373593593025073956895140807052997722971398738500270349278662)
 
 
 @pytest.mark.parametrize('dump', [True, False])
@@ -100,6 +140,29 @@ def test_create_key_pair(dump):
             assert isinstance(v, bytes)
 
 
+@pytest.mark.parametrize(
+    '_hash, expected',
+    [
+        (
+            '565b63ac79b7d35a05322975340ae243e35ce084ae285c719fa6b203916f2845',
+            'c47b72a8c7fa6407027deba86d3466f19c3546970214e8aa0b58094d4de4043a1c1c4893098d83b692528b678837d218230a8d0d5aaff4d4b42d50b255cd774e00'
+        ),
+        (
+            'ab2fda04d97bba54f4d45e5b86ff62c5b720c8adbac277ee5920bf916b735f28',
+            '9cb66fa967e970129569e8b164785edf183e76a4d3cdffecf1f918a1fa7835ce01ab4c2ee72e8aa1a5fae32c5920b0e01a97f104a490b4afca57c0fde664ab1300'
+        ),
+        (
+            'e196055fda057d4abcab0a1b1b0ed54d5a33d23ad348e903bbaacf6c95d8404e',
+            'dd9a6dc3352bd1c864a2c626acd075f8b7c48be30bdc9c9d4d316c7b02bf038f2fb1f6c9e1b7868c75e10abb76cf2eceab1eca1002897ccc6b59a33d0512af1701'
+        )
+    ]
+)
+def test_sign_hash(_hash, expected):
+    private_key = '6e204c62726a19fe3f43c4ca9739b7ffa37e4a3226f824f3e24e00a5890addc6'
+    sign = sign_hash(_hash, private_key)
+    assert sign['signature'] == expected
+
+
 def test_sign_text():
     key_pair = create_key_pair()
     private_key = key_pair['privateKey']
@@ -107,8 +170,6 @@ def test_sign_text():
     message = 'hello, world'
     sig = sign_text(message, private_key)
     _hash, signature = sig['hash'], sig['signature']
-    print('hash:', _hash)
-    print('signature:', signature)
     recover_addr = sig_to_address(_hash, signature)
     assert address == recover_addr
 

@@ -1,4 +1,5 @@
-import json
+from collections import OrderedDict
+from urllib.parse import urlencode, quote
 
 
 def buf_to_hex(buf):
@@ -13,8 +14,19 @@ def dump_buf(buf, dump=True):
     return buf_to_hex(buf) if dump else buf
 
 
+def quote_qs(string, safe='', encoding=None, errors=None):
+    return quote(string, safe=safe, encoding=encoding, errors=errors)
+
+
 def get_sorted_qs(data):
-    return json.dumps(sorted(data))
+    sorted_dict = OrderedDict(sorted(data.items()))
+    # replace True => true, False => false
+    for k, v in sorted_dict.items():
+        if v is True:
+            sorted_dict[k] = 'true'
+        elif v is False:
+            sorted_dict[k] = 'false'
+    return urlencode(sorted_dict, quote_via=quote_qs)
 
 
 def remove_prefix_0x(s):
