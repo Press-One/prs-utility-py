@@ -1,4 +1,4 @@
-.PHONY: all install-dev lint test coverage cov test-all tox clean-pyc
+.PHONY: all install-dev lint hint test coverage cov test-all tox clean-pyc
 
 all: test
 
@@ -7,6 +7,9 @@ install-dev: clean
 
 lint: clean-pyc
 	pylint prs_utility tests
+
+hint: clean
+	mypy --ignore-missing-imports prs_utility
 
 test: clean-pyc install-dev
 	pytest
@@ -31,6 +34,7 @@ clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr *.egg-info
+	rm -rf .coverage .mypy_cache .pytest_cache
 
 clean-pyc:
 	@echo "clean pyc"

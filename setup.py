@@ -47,6 +47,7 @@ setup(
     ],
     extras_require={
         'dev': [
+            'mypy',
             'pytest>=3',
             'coverage',
             'tox',

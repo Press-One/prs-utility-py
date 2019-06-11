@@ -1,12 +1,13 @@
 import json
 import os
+from typing import Any, Dict, Union
 
 from eth_keyfile import decode_keyfile_json
+from eth_keys.datatypes import PrivateKey, PublicKey, Signature
 from eth_utils import (
     keccak,
     to_bytes
 )
-import eth_keys
 
 from . import util
 
@@ -17,7 +18,9 @@ __all__ = [
 ]
 
 
-def recover_private_key(keystore, password, dump=True):
+def recover_private_key(
+        keystore: str, password: str, dump: bool = True
+):
     """recover private key with keystore and password
 
     :param keystore: str, keystore -> json.dumps(keystore)
@@ -32,7 +35,7 @@ def recover_private_key(keystore, password, dump=True):
     return util.dump_buf(private_key, dump)
 
 
-def get_private_key(obj):
+def get_private_key(obj: Union[str, bytes, PrivateKey]) -> PrivateKey:
     """get private key from obj
 
     :param obj: str or bytes or eth_keys.datatypes.PrivateKey,
@@ -40,32 +43,32 @@ def get_private_key(obj):
 
     :return: eth_keys.datatypes.PrivateKey
     """
-    if isinstance(obj, eth_keys.datatypes.PrivateKey):
+    if isinstance(obj, PrivateKey):
         return obj
 
     if isinstance(obj, str):
         obj = to_bytes(hexstr=obj)
 
     if isinstance(obj, bytes):
-        private_key = eth_keys.keys.PrivateKey(obj)
+        private_key = PrivateKey(obj)
         return private_key
 
     raise ValueError('can not get private key from %r' % obj)
 
 
-def private_key_to_address(private_key):
+def private_key_to_address(private_key: str) -> str:
     """return the address of public key
 
     :param private_key: str (hex str) or bytes or eth_keys.datatypes.PrivateKey
 
     :return: str, hex str, remove '0x' prefix
     """
-    private_key = get_private_key(private_key)
-    address = private_key.public_key.to_address()
+    pk = get_private_key(private_key)
+    address = pk.public_key.to_address()
     return util.remove_prefix_0x(address)
 
 
-def keccak256(message):
+def keccak256(message: str) -> str:
     """message digest with keccak
 
     :param message: str
@@ -75,7 +78,7 @@ def keccak256(message):
     return _hash.hex()
 
 
-def create_key_pair(dump=True):
+def create_key_pair(dump: bool = True) -> Dict[str, Union[str, bytes]]:
     """create key pair
 
     :param dump: bool, True: return `bytes.hex`, False: return bytes
@@ -86,8 +89,8 @@ def create_key_pair(dump=True):
         }
     """
     # generate private key
-    private_key = eth_keys.keys.PrivateKey(os.urandom(32))
-    public_key = eth_keys.keys.PublicKey.from_private(private_key)
+    private_key = PrivateKey(os.urandom(32))
+    public_key = PublicKey.from_private(private_key)
     address = private_key_to_address(private_key)
 
     return {
@@ -97,7 +100,7 @@ def create_key_pair(dump=True):
     }
 
 
-def sign_hash(_hash, private_key):
+def sign_hash(_hash: str, private_key: str) -> Dict[str, str]:
     """sign hash with private_key
 
     :param _hash: message hash (digest message with keccak256)
@@ -106,8 +109,8 @@ def sign_hash(_hash, private_key):
     :return: dict, {'hash': _hash, 'signature': sign_hex}
     """
     # get signature
-    private_key = get_private_key(private_key)
-    sign = private_key.sign_msg_hash(util.hex_to_buf(_hash))
+    pk = get_private_key(private_key)
+    sign = pk.sign_msg_hash(util.hex_to_buf(_hash))
     sign_hex = util.remove_prefix_0x(sign.to_hex())
     return {
         'hash': _hash,
@@ -115,7 +118,7 @@ def sign_hash(_hash, private_key):
     }
 
 
-def sig_to_address(msg_hash, sig):
+def sig_to_address(msg_hash: str, sig: str) -> str:
     """get public key's address with msg_hash and sign hex str
 
     :param msg_hash: hex str of message hash
@@ -123,7 +126,7 @@ def sig_to_address(msg_hash, sig):
 
     :return: hex str, public key's address
     """
-    signature = eth_keys.keys.Signature(
+    signature = Signature(
         signature_bytes=util.hex_to_buf(sig)
     )
     public_key = signature.recover_public_key_from_msg_hash(
@@ -133,7 +136,7 @@ def sig_to_address(msg_hash, sig):
     return util.remove_prefix_0x(address)
 
 
-def hash_text(message):
+def hash_text(message: str) -> str:
     """get the hash of text data
 
     :param message: str
@@ -143,7 +146,7 @@ def hash_text(message):
     return keccak256(message)
 
 
-def hash_block_data(data):
+def hash_block_data(data: Dict[str, Any]) -> str:
     """get the hash of block data
 
     :param data: dict
@@ -154,7 +157,7 @@ def hash_block_data(data):
     return keccak256(sorted_data)
 
 
-def sign_block_data(data, private_key):
+def sign_block_data(data: Dict[str, Any], private_key: str) -> Dict[str, str]:
     """sign block data
 
     :param data: dict
@@ -165,18 +168,18 @@ def sign_block_data(data, private_key):
     return sign_hash(hash_block_data(data), private_key)
 
 
-def sign_text(message, private_key):
+def sign_text(message: str, private_key: str) -> Dict[str, str]:
     """sign text data
 
     :param message: str
     :param private_key: hex str, private key
 
-    :return: dict
+    :return: dict, {'hash': _hash, 'signature': sign_hex}
     """
     return sign_hash(hash_text(message), private_key)
 
 
-def sig_to_address_from_block(data, sig):
+def sig_to_address_from_block(data: Dict[str, Any], sig: str) -> str:
     """get public key's address with block data and sign hex str
 
     :param data: dict, block data
