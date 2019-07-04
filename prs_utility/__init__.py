@@ -30,7 +30,7 @@ from .core import (
     sig_to_address_from_block,
 )
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 __all__ = [
     'buf_to_hex',
     'hex_to_buf',
