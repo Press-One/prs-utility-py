@@ -68,13 +68,19 @@ def private_key_to_address(private_key: str) -> str:
     return util.remove_prefix_0x(address)
 
 
-def keccak256(message: str) -> str:
+def keccak256(
+        primitive: Union[bytes, int, bool] = None,
+        hexstr: str = None,
+        text: str = None
+) -> str:
     """message digest with keccak
 
-    :param message: str
+    :param primitive: bytes or int or bool
+    :param hexstr: hex str
+    :param text: str
     :return: hex str
     """
-    _hash = keccak(text=message)
+    _hash = keccak(primitive, hexstr, text)
     return _hash.hex()
 
 
@@ -143,7 +149,7 @@ def hash_text(message: str) -> str:
 
     :return: hex str, digest message (keccak256)
     """
-    return keccak256(message)
+    return keccak256(text=message)
 
 
 def hash_block_data(data: Dict[str, Any]) -> str:
@@ -154,7 +160,7 @@ def hash_block_data(data: Dict[str, Any]) -> str:
     :return: hex str, digest message (keccak256)
     """
     sorted_data = util.get_sorted_qs(data)
-    return keccak256(sorted_data)
+    return keccak256(text=sorted_data)
 
 
 def sign_block_data(data: Dict[str, Any], private_key: str) -> Dict[str, str]:

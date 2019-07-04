@@ -43,11 +43,26 @@ private_key = prs_utility.recover_private_key(
 )
 print('private_key:', private_key)
 
-# 计算文件的 hash 值
+# 计算 hash 值
+## 计算 bytes、int、bool 的 hash 值
+
+print(prs_utility.keccak256(primitive=b'hello'))
+print(prs_utility.keccak256(primitive=42))
+print(prs_utility.keccak256(primitive=True))
+
+注： 函数的第一个可选参数是 primitive，所以，可以不写该参数
+print(prs_utility.keccak256(42))
+
+## 计算 text 或 字符串 的 hash 值
+print(prs_utility.keccak256(text='hello'))
+
 with open(__file__) as fp:
     content = fp.read()
-file_hash = prs_utility.keccak256(content)
+file_hash = prs_utility.keccak256(text=content)
 print('file hash:', file_hash)
+
+## 计算 hex str 的 hash 值
+print(prs_utility.keccak256(hexstr='0xabcd'))
 
 # 根据 PRS 协议组合 block data, 并且使用 privateKey 进行签名
 data = {

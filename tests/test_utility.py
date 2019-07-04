@@ -116,10 +116,30 @@ def test_private_key_to_address():
 
 
 def test_keccak256():
+    # text/str
     message = 'hello prs'
-    _hash = keccak256(message)
+    _hash = keccak256(text=message)
     _HASH = '647df39ad889e83cc0b9b65375672d1bfe282565c564d3d553a435bf80e67d92'
     assert _hash == _HASH
+    # bytes
+    _HASH = '647df39ad889e83cc0b9b65375672d1bfe282565c564d3d553a435bf80e67d92'
+    assert keccak256(message.encode()) == _HASH
+    assert keccak256(primitive=message.encode()) == _HASH
+    # int
+    assert (
+        keccak256(primitive=42)
+        == '04994f67dc55b09e814ab7ffc8df3686b4afb2bb53e60eae97ef043fe03fb829'
+    )
+    # bool
+    assert (
+        keccak256(True) == keccak256(primitive=True)
+        == '5fe7f977e71dba2ea1a68e21057beebb9be2ac30c6410aa38d4f3fbe41dcffd2'
+    )
+    # hexstr
+    assert (
+        keccak256(hexstr='0xabcd') == keccak256(hexstr='abcd')
+        == 'dbe576b4818846aa77e82f4ed5fa78f92766b141f282d36703886d196df39322'
+    )
 
 
 @pytest.mark.parametrize('dump', [True, False])

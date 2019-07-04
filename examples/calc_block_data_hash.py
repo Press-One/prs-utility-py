@@ -5,7 +5,7 @@ with open(__file__) as fp:
     content = fp.read()
 
 data = {
-    'file_hash': prs_utility.keccak256(content),
+    'file_hash': prs_utility.keccak256(text=content),
 }
 key_pair = prs_utility.create_key_pair()
 private_key = key_pair['privateKey']
