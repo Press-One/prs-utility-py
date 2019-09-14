@@ -68,6 +68,17 @@ def test_quote_qs(s, expected):
         ({'a': 'A', 'b': True, 'c': False}, 'a=A&b=true&c=false'),
         ({'c': 'A', 'b': True, 'a': False}, 'a=false&b=true&c=A'),
         ({'c': 'a', 'b': 'b', 'a': 'c'}, 'a=c&b=b&c=a'),
+        (
+            {'b': 1, 'a': {'c': 1, 'b': 2}, 'c': 'c_st[ring]'},
+            'a%5Bb%5D=2&a%5Bc%5D=1&b=1&c=c_st%5Bring%5D'
+        ),
+        (
+            {
+                'b': 1, 'a': {'c': 1, 'b': 2}, 'c': 'c_st[ring]',
+                'd': {'e': {'f': {'g': 'G'}}}
+            },
+            'a%5Bb%5D=2&a%5Bc%5D=1&b=1&c=c_st%5Bring%5D&d%5Be%5D%5Bf%5D%5Bg%5D=G'
+        )
     ]
 )
 def test_get_sorted_qs(data, expected):
