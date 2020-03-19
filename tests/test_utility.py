@@ -194,25 +194,25 @@ def test_sign_hash(_hash, expected):
     assert sign['signature'] == expected
 
 
-@pytest.mark.parametrize('alg', ['keccak256', 'sha256'])
-def test_sign_text(alg):
+@pytest.mark.parametrize('hash_alg', ['keccak256', 'sha256'])
+def test_sign_text(hash_alg):
     key_pair = create_key_pair()
     private_key = key_pair['privateKey']
     address = key_pair['address']
     message = 'hello, world'
-    sig = sign_text(message, private_key, alg=alg)
+    sig = sign_text(message, private_key, hash_alg=hash_alg)
     _hash, signature = sig['hash'], sig['signature']
     recover_addr = sig_to_address(_hash, signature)
     assert address == recover_addr
 
 
-@pytest.mark.parametrize('alg', ['keccak256', 'sha256'])
-def test_sign_block_data(alg):
+@pytest.mark.parametrize('hash_alg', ['keccak256', 'sha256'])
+def test_sign_block_data(hash_alg):
     key_pair = create_key_pair()
     private_key = key_pair['privateKey']
     address = key_pair['address']
     data = {'a': 111, 'b': 222}
-    sig = sign_block_data(data, private_key, alg=alg)
+    sig = sign_block_data(data, private_key, hash_alg=hash_alg)
     _hash, signature = sig['hash'], sig['signature']
     recover_addr = sig_to_address(_hash, signature)
     assert address == recover_addr

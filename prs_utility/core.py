@@ -143,67 +143,67 @@ def sig_to_address(msg_hash: str, sig: str) -> str:
     return util.remove_prefix_0x(address)
 
 
-def hash_text(message: str, alg: str = 'keccak256') -> str:
+def hash_text(message: str, hash_alg: str = 'keccak256') -> str:
     """get the hash of text data
 
     :param message: str
-    :param alg: str, `keccak256` or `sha256`, the default value is `keccak256`
+    :param hash_alg: str, `keccak256` or `sha256`, the default value is `keccak256`
 
     :return: hex str, digest message with `keccak256` or `sha256`
     """
-    if alg == 'keccak256':
+    if hash_alg == 'keccak256':
         _hash = keccak256(text=message)
-    elif alg == 'sha256':
+    elif hash_alg == 'sha256':
         _hash = hashlib.sha256(message.encode()).hexdigest()
     else:
-        raise ValueError(f'unsupport alg param, alg: {alg}')
+        raise ValueError(f'unsupport hash_alg param, hash_alg: {hash_alg}')
     return _hash
 
 
-def hash_block_data(data: Dict[str, Any], alg: str = 'keccak256') -> str:
+def hash_block_data(data: Dict[str, Any], hash_alg: str = 'keccak256') -> str:
     """get the hash of block data
 
     :param data: dict
-    :param alg: `keccak256` or `sha256`, the default value is `keccak256`
+    :param hash_alg: `keccak256` or `sha256`, the default value is `keccak256`
 
     :return: hex str, digest message with `keccak256` or `sha256`
     """
     sorted_data = util.get_sorted_qs(data)
-    if alg == 'keccak256':
+    if hash_alg == 'keccak256':
         _hash = keccak256(text=sorted_data)
-    elif alg == 'sha256':
+    elif hash_alg == 'sha256':
         _hash = hashlib.sha256(sorted_data.encode()).hexdigest()
     else:
-        raise ValueError(f'unsupport alg param, alg: {alg}')
+        raise ValueError(f'unsupport hash_alg param, hash_alg: {hash_alg}')
     return _hash
 
 
 def sign_block_data(
-        data: Dict[str, Any], private_key: str, alg: str = 'keccak256'
+        data: Dict[str, Any], private_key: str, hash_alg: str = 'keccak256'
 ) -> Dict[str, str]:
     """sign block data
 
     :param data: dict
     :param private_key: hex str (private key)
-    :param alg: `keccak256` or `sha256`, the default value is `keccak256`
+    :param hash_alg: `keccak256` or `sha256`, the default value is `keccak256`
 
     :return: dict, {'hash': _hash, 'signature': sign_hex}
     """
-    return sign_hash(hash_block_data(data, alg=alg), private_key)
+    return sign_hash(hash_block_data(data, hash_alg=hash_alg), private_key)
 
 
 def sign_text(
-        message: str, private_key: str, alg: str = 'keccak256'
+        message: str, private_key: str, hash_alg: str = 'keccak256'
 ) -> Dict[str, str]:
     """sign text data
 
     :param message: str
     :param private_key: hex str, private key
-    :param alg: str, `keccak256` or `sha256`, the default value is `keccak256`
+    :param hash_alg: str, `keccak256` or `sha256`, the default value is `keccak256`
 
     :return: dict, {'hash': _hash, 'signature': sign_hex}
     """
-    return sign_hash(hash_text(message, alg=alg), private_key)
+    return sign_hash(hash_text(message, hash_alg=hash_alg), private_key)
 
 
 def sig_to_address_from_block(data: Dict[str, Any], sig: str) -> str:
